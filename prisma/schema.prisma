@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Branch {
+  id              String           @id @default(cuid())
+  slug            String           @unique
+  name            String
+  address         String?
+  phone           String?
+  openingHours    String?
+  mapUrl          String?
+  menuItems       MenuItem[]
+  branchMenuItems BranchMenuItem[]
+  menuViews       MenuView[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Category {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  name      String
+  nameMy    String?
+  sortOrder Int        @default(0)
+  menuItems MenuItem[]
+}
+
+model MenuItem {
+  id              String           @id @default(cuid())
+  name            String
+  nameMy          String?
+  description     String?
+  descriptionMy   String?
+  price           Float
+  image           String?
+  branchId        String
+  categoryId      String
+  isAvailable     Boolean          @default(true)
+  branch          Branch           @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  category        Category         @relation(fields: [categoryId], references: [id])
+  branchMenuItems BranchMenuItem[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([branchId, categoryId])
+}
+
+model BranchMenuItem {
+  id          String   @id @default(cuid())
+  branchId    String
+  menuItemId  String
+  branch      Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@unique([branchId, menuItemId])
+  @@index([branchId])
+  @@index([menuItemId])
+}
+
+model MenuView {
+  id        String   @id @default(cuid())
+  branchId  String
+  locale    String   @default("en")
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([branchId, createdAt])
+}
