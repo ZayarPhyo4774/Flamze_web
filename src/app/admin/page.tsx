@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { prisma } from "@/lib/prisma";
 import { UtensilsCrossed, MapPin, Flame, Eye } from "lucide-react";
