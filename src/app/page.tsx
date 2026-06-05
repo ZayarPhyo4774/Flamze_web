@@ -1,3 +1,4 @@
+
 import { prisma } from "@/lib/prisma";
 import { LandingClient } from "@/components/landing/LandingClient";
 
