@@ -11,7 +11,7 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative flex min-h-screen items-end justify-center overflow-hidden px-4 py-28 text-center"
+      className="relative flex min-h-screen w-full items-end justify-center overflow-hidden px-4 py-28 text-center"
     >
       {/* <Image
         src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=2400&q=85"
@@ -22,16 +22,16 @@ export function Hero() {
         className="object-cover"
       /> */}
       <video
-      controls
       autoPlay
       muted
       loop
       playsInline
+      preload="metadata"
       className="absolute insert-0 h-full w-full object-contain"
       >
         <source src="/video/hero.mp4" type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-black/0" />
+      <div className="absolute inset-0" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(229,57,53,0.28),transparent_36%),linear-gradient(180deg,rgba(15,15,15,0.25)_0%,#0F0F0F_100%)]" />
 
       <div className="relative z-10 mx-auto max-w-5xl animate-hero-fade">
