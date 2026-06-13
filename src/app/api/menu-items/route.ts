@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, nameMy, description, descriptionMy, price, image, branchIds, categoryId, isAvailable } = body;
+    const { name, nameMy, description, descriptionMy, price, image, rating, branchIds, categoryId, isAvailable } = body;
 
     if (!name || !Array.isArray(branchIds) || branchIds.length === 0 || !categoryId || price === undefined) {
       return NextResponse.json(
@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
         descriptionMy: descriptionMy?.trim() || null,
         price: parseFloat(price),
         image: image || null,
+        rating: typeof rating === "number" ? Math.min(Math.max(rating, 0), 5) : 0,
         branchId: branchIds[0],
         categoryId,
         isAvailable: isAvailable ?? true,
@@ -84,7 +85,11 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch {
-    return NextResponse.json({ error: "Failed to create menu item" }, { status: 500 });
+  } catch (error) {
+    console.error("Failed to create menu item", error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to create menu item" },
+      { status: 500 }
+    );
   }
 }

@@ -49,7 +49,7 @@ export function AdminLoginForm() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-600 shadow-lg shadow-red-900/40">
             <Flame className="h-7 w-7 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">FLAMZE Admin</h1>
+          <h1 className="text-2xl font-bold text-white">FLAMEZ Admin</h1>
           <p className="mt-1 text-sm text-zinc-500">Sign in to manage your restaurant</p>
         </div>
 

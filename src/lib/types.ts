@@ -6,6 +6,7 @@ export type MenuItemWithCategory = {
   descriptionMy: string | null;
   price: number;
   image: string | null;
+  rating: number;
   branchId: string;
   categoryId: string;
   isAvailable: boolean;
@@ -57,6 +58,7 @@ export type MenuItemFormData = {
   descriptionMy?: string;
   price: number;
   image?: string;
+  rating: number;
   branchIds: string[];
   categoryId: string;
   isAvailable?: boolean;

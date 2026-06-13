@@ -103,21 +103,34 @@ function AdminMenuPageContent() {
   };
 
   const handleCreate = async (data: MenuItemFormData) => {
-    await fetch("/api/menu-items", {
+    const response = await fetch("/api/menu-items", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-flamze-csrf": "1" },
       body: JSON.stringify(data),
     });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body?.error || "Failed to create menu item");
+    }
+
     await refreshData();
   };
 
   const handleUpdate = async (data: MenuItemFormData) => {
     if (!editingItem) return;
-    await fetch(`/api/menu-items/${editingItem.id}`, {
+
+    const response = await fetch(`/api/menu-items/${editingItem.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json", "x-flamze-csrf": "1" },
       body: JSON.stringify(data),
     });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body?.error || "Failed to update menu item");
+    }
+
     setEditingItem(null);
     await refreshData();
   };
@@ -137,6 +150,7 @@ function AdminMenuPageContent() {
       descriptionMy: item.descriptionMy ?? "",
       price: item.price,
       image: item.image ?? "",
+      rating: item.rating,
       branchIds: [
         ...item.branches.map((branch) => branch.id),
         unassignedBranch?.id ?? item.branches[0]?.id ?? "",
@@ -266,6 +280,7 @@ function AdminMenuPageContent() {
                   descriptionMy: editingItem.descriptionMy ?? "",
                   price: editingItem.price,
                   image: editingItem.image ?? "",
+                  rating: editingItem.rating,
                   branchIds: editingItem.branches.map((branch) => branch.id),
                   categoryId: editingItem.category.id,
                   isAvailable: editingItem.isAvailable,

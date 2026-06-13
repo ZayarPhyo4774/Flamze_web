@@ -15,6 +15,7 @@ type MenuItemRow = {
   descriptionMy: string | null;
   price: number;
   image: string | null;
+  rating: number;
   isAvailable: boolean;
   branches: { id: string; name: string }[];
   category: { id: string; slug: string; name: string };
@@ -55,6 +56,7 @@ export function MenuItemTable({ items, onEdit, onDelete, onDuplicate }: MenuItem
               <th className="px-4 py-3 font-medium">Category</th>
               <th className="px-4 py-3 font-medium">Branch</th>
               <th className="px-4 py-3 font-medium">Price</th>
+              <th className="px-4 py-3 font-medium">Rating</th>
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium">Actions</th>
             </tr>
@@ -87,7 +89,22 @@ export function MenuItemTable({ items, onEdit, onDelete, onDuplicate }: MenuItem
                     ? item.branches[0]?.name
                     : `${item.branches.length} branches`}
                 </td>
-                <td className="px-4 py-3 font-medium text-amber-400">{formatPrice(item.price)}</td>
+                <td className="px-4 py-3 text-amber-400">{formatPrice(item.price)}</td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <span
+                        key={value}
+                        className={
+                          "text-sm " +
+                          (item.rating >= value ? "text-amber-400" : "text-zinc-700")
+                        }
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                </td>
                 <td className="px-4 py-3">
                   <Badge variant={item.isAvailable ? "success" : "warning"}>
                     {item.isAvailable ? "Available" : "Unavailable"}

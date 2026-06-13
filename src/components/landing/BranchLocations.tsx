@@ -40,36 +40,39 @@ export function BranchLocations({ branches }: BranchLocationsProps) {
               <div className="absolute left-8 right-10 top-1/2 h-1 -translate-y-1/2 rotate-[-12deg] bg-[#FFC107]/70 shadow-[0_0_28px_rgba(255,193,7,0.45)]" />
               <div className="absolute bottom-12 left-14 top-10 w-1 rotate-[18deg] bg-[#E53935]/70 shadow-[0_0_28px_rgba(229,57,53,0.45)]" />
 
-              {branches.slice(0, 4).map((branch, index) => {
-                const positions = [
-                  "left-[18%] top-[22%]",
-                  "right-[18%] top-[30%]",
-                  "left-[36%] bottom-[18%]",
-                  "right-[28%] bottom-[24%]",
-                ];
+              {(() => {
+                const pinPositions =
+                  branches.length === 1
+                    ? ["left-1/2 top-1/2"]
+                    : [
+                        "left-[18%] top-[22%]",
+                        "right-[18%] top-[30%]",
+                        "left-[36%] bottom-[18%]",
+                        "right-[28%] bottom-[24%]",
+                      ];
 
-                return (
+                return branches.slice(0, 4).map((branch, index) => (
                   <Link
                     key={branch.id}
                     href={`/menu?branch=${branch.slug}`}
-                    className={`absolute ${positions[index]} group flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-[#FFC107]/60 bg-black/80 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white shadow-2xl shadow-black/50 backdrop-blur transition-all duration-300 hover:border-[#FFC107] hover:bg-[#FFC107] hover:text-black`}
+                    className={`absolute ${pinPositions[index] ?? pinPositions[0]} group flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-[#FFC107]/60 bg-black/80 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white shadow-2xl shadow-black/50 backdrop-blur transition-all duration-300 hover:border-[#FFC107] hover:bg-[#FFC107] hover:text-black`}
                   >
                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#E53935] text-white">
                       <MapPin className="h-4 w-4" />
                     </span>
                     <span className="max-w-28 truncate">{branch.name}</span>
                   </Link>
-                );
-              })}
+                ));
+              })()}
             </div>
           </div>
         </div>
 
-        <div className="grid gap-4">
+        <div className={`grid gap-4 ${branches.length === 1 ? "place-items-center" : ""}`}>
           {branches.map((branch, index) => (
             <article
               key={branch.id}
-              className="group rounded border border-white/10 bg-black p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#FFC107]/60 hover:bg-[#151515]"
+              className={`group rounded border border-white/10 bg-black p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#FFC107]/60 hover:bg-[#151515] ${branches.length === 1 ? "w-full sm:w-[540px]" : "w-full"}`}
             >
               <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Star } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -28,6 +29,7 @@ const emptyForm: MenuItemFormData = {
   descriptionMy: "",
   price: 0,
   image: "",
+  rating: 0,
   branchIds: [],
   categoryId: "",
   isAvailable: true,
@@ -64,13 +66,18 @@ function MenuItemFormBody({
     initialData ?? buildDefaultForm(branches, categories, defaultBranchIds)
   );
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setError(null);
+
     try {
       await onSubmit(form);
       onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save menu item");
     } finally {
       setSubmitting(false);
     }
@@ -135,40 +142,62 @@ function MenuItemFormBody({
         />
 
         <div className="space-y-1.5">
-          <label className="block text-sm font-medium text-zinc-300">Branches</label>
-          <div
-            role="listbox"
-            aria-multiselectable="true"
-            className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-auto rounded-xl border border-zinc-700 bg-zinc-900/80 p-2"
-          >
-            {branches.map((b) => {
-              const selected = form.branchIds.includes(b.id);
-              return (
-                <button
-                  key={b.id}
-                  type="button"
-                  onClick={() => {
-                    if (selected) {
-                      setForm({ ...form, branchIds: form.branchIds.filter((id) => id !== b.id) });
-                    } else {
-                      setForm({ ...form, branchIds: [...form.branchIds, b.id] });
-                    }
-                  }}
-                  className={
-                    "w-full text-left px-3 py-2 rounded-xl text-sm transition-colors " +
-                    (selected
-                      ? "bg-red-600 text-white"
-                      : "bg-transparent text-white/80 hover:bg-zinc-800/60")
-                  }
-                >
-                  {selected ? "✓ " : ""}
-                  {b.name}
-                </button>
-              );
-            })}
+          <label className="block text-sm font-medium text-zinc-300">Rating</label>
+          <div className="flex items-center gap-2">
+            {[1, 2, 3, 4, 5].map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setForm({ ...form, rating: value })}
+                className="rounded-full p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                aria-label={`${value} star${value === 1 ? "" : "s"}`}
+              >
+                <Star
+                  className={`h-5 w-5 ${form.rating >= value ? "text-amber-400" : "text-zinc-600"}`}
+                />
+              </button>
+            ))}
+            <span className="text-sm text-zinc-500">
+              {form.rating > 0 ? `${form.rating} / 5` : "No rating"}
+            </span>
           </div>
-          <p className="text-xs text-zinc-500">Click to toggle branch selection.</p>
         </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="block text-sm font-medium text-zinc-300">Branches</label>
+        <div
+          role="listbox"
+          aria-multiselectable="true"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-auto rounded-xl border border-zinc-700 bg-zinc-900/80 p-2"
+        >
+          {branches.map((b) => {
+            const selected = form.branchIds.includes(b.id);
+            return (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => {
+                  if (selected) {
+                    setForm({ ...form, branchIds: form.branchIds.filter((id) => id !== b.id) });
+                  } else {
+                    setForm({ ...form, branchIds: [...form.branchIds, b.id] });
+                  }
+                }}
+                className={
+                  "w-full text-left px-3 py-2 rounded-xl text-sm transition-colors " +
+                  (selected
+                    ? "bg-red-600 text-white"
+                    : "bg-transparent text-white/80 hover:bg-zinc-800/60")
+                }
+              >
+                {selected ? "✓ " : ""}
+                {b.name}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-xs text-zinc-500">Click to toggle branch selection.</p>
       </div>
 
       <div className="space-y-1.5">
@@ -194,6 +223,12 @@ function MenuItemFormBody({
         value={form.image ?? ""}
         onChange={(url) => setForm({ ...form, image: url })}
       />
+
+      {error ? (
+        <div className="rounded-xl border border-red-600/30 bg-red-600/10 px-4 py-3 text-sm text-red-300">
+          {error}
+        </div>
+      ) : null}
 
       <label className="flex items-center gap-3 cursor-pointer">
         <input

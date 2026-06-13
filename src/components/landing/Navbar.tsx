@@ -53,7 +53,7 @@ export function Navbar() {
           />
           <span className="flex flex-col leading-none">
             <span className="text-lg font-black uppercase tracking-[0.18em]">
-              Flamze
+              Flamez
             </span>
             <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-400 transition-colors group-hover:text-[#FFC107]/80">
               Hotpot & BBQ

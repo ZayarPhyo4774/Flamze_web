@@ -142,6 +142,7 @@ function MenuWithBranch({ branchSlug }: { branchSlug: string }) {
                   description={item.displayDescription || null}
                   price={item.price}
                   image={item.image}
+                  rating={item.rating}
                   categoryName={item.displayCategory}
                   noImageLabel={t.menu.noImage}
                 />

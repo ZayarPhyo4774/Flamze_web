@@ -56,12 +56,12 @@ export function Branches({ branches }: BranchesProps) {
           </p>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className={`grid gap-5 md:grid-cols-2 lg:grid-cols-3 ${visibleBranches.length === 1 ? "place-items-center" : ""}`}>
           {visibleBranches.map((branch, index) => (
             <Link
               key={branch.id}
               href={`/menu?branch=${branch.slug}`}
-              className="group overflow-hidden rounded border border-white/10 bg-white/[0.03] transition-all duration-300 hover:-translate-y-1 hover:border-[#E53935]/60"
+              className={`group overflow-hidden rounded border border-white/10 bg-white/[0.03] transition-all duration-300 hover:-translate-y-1 hover:border-[#E53935]/60 ${visibleBranches.length === 1 ? "w-full sm:w-[540px]" : "w-full"}`}
             >
               <div className="relative aspect-[16/11] overflow-hidden">
                 <Image

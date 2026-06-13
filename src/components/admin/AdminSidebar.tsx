@@ -34,7 +34,7 @@ export function AdminSidebar() {
           <Flame className="h-5 w-5 text-white" />
         </div>
         <div>
-          <p className="font-bold text-white">FLAMZE</p>
+          <p className="font-bold text-white">FLAMEZ</p>
           <p className="text-xs text-zinc-500">Admin Panel</p>
         </div>
       </div>

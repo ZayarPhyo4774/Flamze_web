@@ -45,6 +45,12 @@ export function QrCodeCard({
           size={size}
           level="H"
           includeMargin={false}
+          imageSettings={{
+            src : "/flamze-logo.png",
+            height : 40,
+            width : 40,
+            excavate: true
+          }}
         />
       </div>
 

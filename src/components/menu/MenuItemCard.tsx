@@ -6,6 +6,7 @@ interface MenuItemCardProps {
   description: string | null;
   price: number;
   image: string | null;
+  rating?: number;
   categoryName: string;
   noImageLabel?: string;
 }
@@ -15,6 +16,7 @@ export function MenuItemCard({
   description,
   price,
   image,
+  rating,
   categoryName,
   noImageLabel = "No image",
 }: MenuItemCardProps) {
@@ -43,12 +45,27 @@ export function MenuItemCard({
       </div>
 
       <div className="p-4">
-        <div className="mb-2 flex items-start justify-between gap-3">
+        <div className="mb-3 flex items-center justify-between gap-3">
           <h3 className="leading-snug font-bold text-zinc-950">{name}</h3>
           <span className="shrink-0 rounded-full bg-amber-400/20 px-2.5 py-1 text-xs font-black text-zinc-950 ring-1 ring-amber-500/30">
             {formatPrice(price)}
           </span>
         </div>
+        {typeof rating === "number" && rating > 0 ? (
+          <div className="mb-3 flex gap-1">
+            {[1, 2, 3, 4, 5].map((value) => (
+              <span
+                key={value}
+                className={
+                  "text-sm " +
+                  (rating >= value ? "text-amber-400" : "text-zinc-400")
+                }
+              >
+                ★
+              </span>
+            ))}
+          </div>
+        ) : null}
         {description && (
           <p className="line-clamp-2 text-sm leading-6 text-zinc-600">{description}</p>
         )}

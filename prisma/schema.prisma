@@ -40,6 +40,7 @@ model MenuItem {
   descriptionMy   String?
   price           Float
   image           String?
+  rating          Int              @default(0)
   branchId        String
   categoryId      String
   isAvailable     Boolean          @default(true)

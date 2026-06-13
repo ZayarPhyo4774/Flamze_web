@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Star } from "lucide-react";
 import { useLocale } from "@/context/LocaleContext";
 import { getLocalizedField } from "@/i18n/translations";
 import { formatPrice } from "@/lib/utils";
@@ -92,6 +92,19 @@ export function FeaturedMenu({ menuItems }: FeaturedMenuProps) {
                     <h3 className="text-xl font-black uppercase tracking-[0.06em] text-white">
                       {itemName}
                     </h3>
+
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((v) => (
+                          <Star
+                            key={v}
+                            className={`h-4 w-4 ${item.rating >= v ? "text-amber-400" : "text-zinc-700/30"}`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs text-zinc-500">{item.rating > 0 ? `${item.rating}/5` : "No rating"}</span>
+                    </div>
+
                     {itemDescription && (
                       <p className="mt-3 line-clamp-2 text-sm leading-6 text-zinc-400">
                         {itemDescription}

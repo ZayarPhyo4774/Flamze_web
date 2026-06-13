@@ -37,7 +37,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
   try {
     const body = await request.json();
-    const { name, nameMy, description, descriptionMy, price, image, branchIds, categoryId, isAvailable } = body;
+    const { name, nameMy, description, descriptionMy, price, image, rating, branchIds, categoryId, isAvailable } = body;
 
     const updateData: Prisma.MenuItemUpdateInput = {
       ...(name !== undefined && { name }),
@@ -46,6 +46,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       ...(descriptionMy !== undefined && { descriptionMy: descriptionMy?.trim() || null }),
       ...(price !== undefined && { price: parseFloat(price) }),
       ...(image !== undefined && { image }),
+      ...(rating !== undefined && { rating: Math.min(Math.max(rating, 0), 5) }),
       ...(categoryId !== undefined && { category: { connect: { id: categoryId } } }),
       ...(isAvailable !== undefined && { isAvailable }),
       ...(Array.isArray(branchIds) && branchIds.length > 0 && {
