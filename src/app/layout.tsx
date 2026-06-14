@@ -19,7 +19,7 @@ const notoSansMyanmar = Noto_Sans_Myanmar({
 });
 
 export const metadata: Metadata = {
-  title: "FLAMZE — Hotpot & BBQ",
+  title: "FLAMEZ — Hotpot & BBQ",
   description: "Scan QR codes to explore our dynamic hotpot and BBQ menu across all branches.",
 };
 

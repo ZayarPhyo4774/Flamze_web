@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Flame, LayoutDashboard, UtensilsCrossed, MapPin, Home, Tags } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import Image from "next/image";
 const links = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
@@ -31,7 +31,14 @@ export function AdminSidebar() {
     <aside className="flex w-full flex-col border-b border-zinc-800 bg-zinc-950 lg:w-64 lg:border-b-0 lg:border-r lg:min-h-screen">
       <div className="flex items-center gap-3 border-b border-zinc-800 px-6 py-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-600">
-          <Flame className="h-5 w-5 text-white" />
+           <Image
+               src="/flamze-logo.png"
+               alt=""
+              //  width={40}
+              //  height={40}
+               className="h-10 w-10 shrink-0 rounded shadow-lg shadow-red-950/40 transition-transform duration-300 group-hover:scale-105"
+               priority
+             />         
         </div>
         <div>
           <p className="font-bold text-white">FLAMEZ</p>
