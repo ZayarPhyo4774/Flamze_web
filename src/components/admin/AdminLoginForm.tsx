@@ -6,6 +6,7 @@ import { Flame, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { sanitizeAdminRedirect } from "@/lib/utils";
+import Image from "next/image";
 
 export function AdminLoginForm() {
   const router = useRouter();
@@ -48,6 +49,14 @@ export function AdminLoginForm() {
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-600 shadow-lg shadow-red-900/40">
             <Flame className="h-7 w-7 text-white" />
+           <Image
+               src="/flamze-logo.png"
+               alt=""
+               width={40}
+               height={40}
+               className="h-10 w-10 shrink-0 rounded shadow-lg shadow-red-950/40 transition-transform duration-300 group-hover:scale-105"
+               priority
+             />         
           </div>
           <h1 className="text-2xl font-bold text-white">FLAMEZ Admin</h1>
           <p className="mt-1 text-sm text-zinc-500">Sign in to manage your restaurant</p>
