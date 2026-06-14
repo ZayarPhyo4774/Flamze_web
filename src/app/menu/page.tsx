@@ -152,13 +152,13 @@ function MenuWithBranch({ branchSlug }: { branchSlug: string }) {
         )}
       </div>
 
-      <Link
+      {/* <Link
         href="/"
         className="fixed bottom-6 left-4 flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-950/90 px-4 py-2 text-xs text-zinc-400 backdrop-blur-sm hover:text-white transition-colors"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         {t.menu.backBranches}
-      </Link>
+      </Link> */}
     </div>
   );
 }
