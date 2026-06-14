@@ -30,7 +30,7 @@ export function AdminSidebar() {
   return (
     <aside className="flex w-full flex-col border-b border-zinc-800 bg-zinc-950 lg:w-64 lg:border-b-0 lg:border-r lg:min-h-screen">
       <div className="flex items-center gap-3 border-b border-zinc-800 px-6 py-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-600">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white-600">
            <Image
                src="/flamze-logo.png"
                alt=""
