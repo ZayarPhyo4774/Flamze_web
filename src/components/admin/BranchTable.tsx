@@ -134,7 +134,12 @@ export function BranchTable({ branches, onEdit, onDelete, onSelectItems }: Branc
         title="Branch QR Code"
       >
         {qrBranch && (
-          <QrCodeCard branchName={qrBranch.name} branchSlug={qrBranch.slug} size={240} />
+          <QrCodeCard
+            branchName={qrBranch.name}
+            branchSlug={qrBranch.slug}
+            siteUrl={process.env.NEXT_PUBLIC_SITE_URL}
+            size={240}
+          />
         )}
       </Modal>
     </>

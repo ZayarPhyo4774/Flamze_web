@@ -76,7 +76,7 @@ export function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           <LanguageSwitcher />
           <Link
-            href="#branches"
+            href="/menu?branch=yangon"
             className="rounded border border-[#FFC107]/80 px-5 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#FFC107] transition-all duration-300 hover:bg-[#FFC107] hover:text-black"
           >
             {t.nav.viewMenu}

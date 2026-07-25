@@ -47,7 +47,7 @@ export function Hero() {
 
         <div className="mt-10 flex items-center justify-center">
           <Link
-            href="#branches"
+            href="/menu?branch=yangon"
             className="group flex w-full items-center justify-center gap-2 rounded bg-[#FFC107] px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-black transition-all duration-300 hover:bg-white sm:w-auto"
           >
             {t.hero.viewMenu}

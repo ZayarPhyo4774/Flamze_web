@@ -126,6 +126,7 @@ export default function AdminBranchesPage() {
                       key={branch.id}
                       branchName={branch.name}
                       branchSlug={branch.slug}
+                      siteUrl={process.env.NEXT_PUBLIC_SITE_URL}
                     />
                   ))}
                 </div>

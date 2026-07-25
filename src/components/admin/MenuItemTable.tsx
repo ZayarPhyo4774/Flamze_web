@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Pencil, Trash2, Copy } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, Pencil, Trash2, Copy } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/utils";
+
+const PAGE_SIZE_OPTIONS = [5, 10, 25, 50] as const;
 
 type MenuItemRow = {
   id: string;
@@ -30,6 +32,24 @@ interface MenuItemTableProps {
 
 export function MenuItemTable({ items, onEdit, onDelete, onDuplicate }: MenuItemTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, items.length);
+  const paginatedItems = items.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    setPage(1);
+  }, [items.length, pageSize]);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this menu item?")) return;
@@ -48,10 +68,30 @@ export function MenuItemTable({ items, onEdit, onDelete, onDuplicate }: MenuItem
 
   return (
     <div className="overflow-hidden rounded-2xl border border-zinc-800">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-zinc-800 bg-zinc-900/50 text-left text-zinc-400">
+      <div className="flex flex-col gap-3 border-b border-zinc-800 bg-zinc-900/50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-zinc-400">
+          Showing {startIndex + 1}–{endIndex} of {items.length} items
+        </p>
+        <label className="flex items-center gap-2 text-sm text-zinc-400">
+          <span>Rows per page</span>
+          <select
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+            className="rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-white focus:border-red-500 focus:outline-none"
+          >
+            {PAGE_SIZE_OPTIONS.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div className="max-h-[min(60vh,640px)] overflow-auto">
+        <table className="w-full min-w-[800px] text-sm">
+          <thead className="sticky top-0 z-10">
+            <tr className="border-b border-zinc-800 bg-zinc-900 text-left text-zinc-400">
               <th className="px-4 py-3 font-medium">Item</th>
               <th className="px-4 py-3 font-medium">Category</th>
               <th className="px-4 py-3 font-medium">Branch</th>
@@ -62,7 +102,7 @@ export function MenuItemTable({ items, onEdit, onDelete, onDuplicate }: MenuItem
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-800/50">
-            {items.map((item) => (
+            {paginatedItems.map((item) => (
               <tr key={item.id} className="bg-zinc-950/50 hover:bg-zinc-900/30 transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
@@ -134,6 +174,32 @@ export function MenuItemTable({ items, onEdit, onDelete, onDuplicate }: MenuItem
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex flex-col gap-3 border-t border-zinc-800 bg-zinc-900/50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-zinc-500">
+          Page {currentPage} of {totalPages}
+        </p>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage <= 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage >= totalPages}
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

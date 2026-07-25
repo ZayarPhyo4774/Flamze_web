@@ -51,8 +51,8 @@ export function AdminLoginForm() {
            <Image
                src="/flamze-logo.png"
                alt=""
-              //  width={40}
-              //  height={40}
+               width={40}
+               height={40}
                className="h-10 w-10 shrink-0 rounded shadow-lg shadow-red-950/40 transition-transform duration-300 group-hover:scale-105"
                priority
              />         

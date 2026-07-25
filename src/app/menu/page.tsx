@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense, useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowUp, Loader2 } from "lucide-react";
 import { MenuHeader } from "@/components/menu/MenuHeader";
 import { CategoryTabs } from "@/components/menu/CategoryTabs";
 import { MenuItemCard } from "@/components/menu/MenuItemCard";
@@ -25,6 +25,20 @@ function MenuWithBranch({ branchSlug }: { branchSlug: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const { scrollY, innerHeight } = window;
+      const { scrollHeight } = document.documentElement;
+      const nearBottom = scrollY + innerHeight >= scrollHeight - 80;
+      setShowScrollTop(scrollY > 300 || nearBottom);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -152,13 +166,19 @@ function MenuWithBranch({ branchSlug }: { branchSlug: string }) {
         )}
       </div>
 
-      {/* <Link
-        href="/"
-        className="fixed bottom-6 left-4 flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-950/90 px-4 py-2 text-xs text-zinc-400 backdrop-blur-sm hover:text-white transition-colors"
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label={t.menu.upToTop}
+        className={`fixed bottom-6 right-4 z-50 flex items-center gap-2 rounded-full bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_32px_rgba(220,38,38,0.5)] ring-2 ring-white/20 transition-all hover:bg-red-500 hover:shadow-[0_12px_40px_rgba(220,38,38,0.6)] active:scale-95 ${
+          showScrollTop
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-4 opacity-0"
+        }`}
       >
-        <ArrowLeft className="h-3.5 w-3.5" />
-        {t.menu.backBranches}
-      </Link> */}
+        <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
+        {t.menu.upToTop}
+      </button>
     </div>
   );
 }

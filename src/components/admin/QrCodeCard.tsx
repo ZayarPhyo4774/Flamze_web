@@ -1,10 +1,13 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { Download, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { getMenuUrl } from "@/lib/utils";
+
+const LOGO_SRC = "/flamze-logo.png";
+const LOGO_RATIO = 0.22;
 
 interface QrCodeCardProps {
   branchName: string;
@@ -17,39 +20,52 @@ export function QrCodeCard({
   branchName,
   branchSlug,
   siteUrl,
-  size = 200,
+  size = 240,
 }: QrCodeCardProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const menuUrl =
+  const logoSize = Math.round(size * LOGO_RATIO);
+
+  const baseUrl =
     siteUrl ??
-    (typeof window !== "undefined"
-      ? getMenuUrl(branchSlug, window.location.origin)
-      : getMenuUrl(branchSlug));
+    (typeof window !== "undefined" ? window.location.origin : undefined);
+  const menuUrl = getMenuUrl(branchSlug, baseUrl);
+
+  useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = LOGO_SRC;
+  }, []);
 
   const handleDownload = () => {
     const canvas = canvasRef.current?.querySelector("canvas");
     if (!canvas) return;
 
-    const url = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `flamze-${branchSlug}-qr.png`;
-    link.click();
+    requestAnimationFrame(() => {
+      const url = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `flamze-${branchSlug}-qr.png`;
+      link.click();
+    });
   };
 
   return (
     <div className="flex flex-col items-center rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
-      <div ref={canvasRef} className="rounded-xl bg-white p-3">
+      <div ref={canvasRef} className="rounded-2xl bg-white p-4 shadow-lg">
         <QRCodeCanvas
           value={menuUrl}
           size={size}
           level="H"
-          includeMargin={false}
+          marginSize={2}
+          bgColor="#FFFFFF"
+          fgColor="#E53935"
+          title={`${branchName} menu QR code`}
           imageSettings={{
-            src : "/flamze-logo.png",
-            height : 40,
-            width : 40,
-            excavate: true
+            src: LOGO_SRC,
+            height: logoSize,
+            width: logoSize,
+            excavate: true,
+            crossOrigin: "anonymous",
           }}
         />
       </div>

@@ -76,6 +76,7 @@ export const translations = {
       error: "Something went wrong",
       backHome: "← Back to home",
       backBranches: "Branches",
+      upToTop: "Back to top",
       noImage: "No image",
     },
     admin: {
@@ -149,8 +150,8 @@ export const translations = {
       noBranch: "ဆိုင်ခွဲ မသတ်မှတ်ထားပါ။ QR code မှန်ကန်စွာ ဖတ်ပါ။",
       error: "တစ်ခုခု မှားယွင်းနေပါသည်",
       backHome: "← ပင်မစာမျက်နှာသို့",
-      backBranches: "ဆိုင်ခွဲများ",
-      noImage: "ပုံ မရှိပါ",
+      upToTop: "ထိပ်သို့",
+      noImage: "ပုံ မရှိပါ။",
     },
     admin: {
       signOut: "ထွက်ရန်",
