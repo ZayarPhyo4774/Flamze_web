@@ -5,10 +5,10 @@ import { Camera, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { useLocale } from "@/context/LocaleContext";
 
 const links = [
-  { labelKey: "home", href: "#home" },
-  { labelKey: "menu", href: "#signature" },
-  { labelKey: "branches", href: "#branches" },
-  { labelKey: "about", href: "#about" },
+  { labelKey: "home", href: "/#home" },
+  { labelKey: "menu", href: "/#signature" },
+  { labelKey: "branches", href: "/#branches" },
+  { labelKey: "about", href: "/#about" },
   { labelKey: "admin", href: "/admin" },
 ] as const;
 
@@ -22,7 +22,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.2fr_0.8fr_1fr]">
         <div>
           <Link
-            href="#home"
+            href="/#home"
             className="text-lg font-black uppercase tracking-[0.28em] text-white"
           >
             HOTPOT & BBQ
@@ -32,14 +32,14 @@ export function Footer() {
           </p>
           <div className="mt-6 flex gap-3">
             <Link
-              href="#home"
+              href="/#home"
               aria-label="Instagram"
               className="rounded border border-white/10 p-2 text-zinc-400 transition-colors hover:border-[#FFC107]/60 hover:text-[#FFC107]"
             >
               <Camera className="h-4 w-4" />
             </Link>
             <Link
-              href="#home"
+              href="/#home"
               aria-label="Facebook"
               className="rounded border border-white/10 p-2 text-zinc-400 transition-colors hover:border-[#FFC107]/60 hover:text-[#FFC107]"
             >

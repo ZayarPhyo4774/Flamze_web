@@ -28,7 +28,7 @@ export function CTA() {
             {t.landing.ctaTitle}
           </h2>
           <Link
-            href="#branches"
+            href="/#branches"
             className="group mt-8 inline-flex items-center gap-2 rounded bg-[#FFC107] px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-black transition-all duration-300 hover:bg-white"
           >
             {t.landing.viewFullMenu}

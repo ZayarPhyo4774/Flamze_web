@@ -35,7 +35,7 @@ export function FeaturedMenu({ menuItems }: FeaturedMenuProps) {
             </h2>
           </div>
           <Link
-            href="#branches"
+            href="/#branches"
             className="group inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.2em] text-zinc-300 transition-colors hover:text-[#FFC107]"
           >
             {t.landing.viewFullMenu}

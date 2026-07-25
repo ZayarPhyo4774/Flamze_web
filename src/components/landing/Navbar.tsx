@@ -9,11 +9,11 @@ import { useLocale } from "@/context/LocaleContext";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { labelKey: "home", href: "#home" },
-  { labelKey: "menu", href: "#signature" },
-  { labelKey: "branches", href: "#branches" },
-  { labelKey: "locations", href: "#locations" },
-  { labelKey: "about", href: "#about" },
+  { labelKey: "home", href: "/#home" },
+  { labelKey: "menu", href: "/#signature" },
+  { labelKey: "branches", href: "/#branches" },
+  { labelKey: "locations", href: "/#locations" },
+  { labelKey: "about", href: "/#about" },
 ] as const;
 
 export function Navbar() {
@@ -39,7 +39,7 @@ export function Navbar() {
     >
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
-          href="#home"
+          href="/#home"
           className="group inline-flex items-center gap-3 text-white transition-colors hover:text-[#FFC107]"
           aria-label="Flamze home"
         >
@@ -118,7 +118,7 @@ export function Navbar() {
           <div className="flex items-center justify-between gap-3">
             <LanguageSwitcher />
             <Link
-              href="#branches"
+              href="/#branches"
               onClick={() => setIsOpen(false)}
               className="flex-1 rounded border border-[#FFC107]/80 px-4 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-[#FFC107]"
             >
