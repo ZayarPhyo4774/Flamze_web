@@ -78,7 +78,7 @@ export function Footer() {
             </p>
             <p className="flex gap-3">
               <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#E53935]" />
-              +95 9 123 456 789
+              +95 9 970 980 990
             </p>
             <p className="flex gap-3">
               <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#E53935]" />
