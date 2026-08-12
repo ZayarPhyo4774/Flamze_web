@@ -18,6 +18,8 @@ const ADMIN_API_PREFIXES = [
   "/api/menu-items",
   "/api/upload",
   "/api/analytics",
+  "/api/site-content",
+  "/api/nav-links",
 ];
 
 function isPublicApi(pathname: string, method: string): boolean {
@@ -67,5 +69,9 @@ export const config = {
     "/api/menu-items/:path*",
     "/api/upload",
     "/api/analytics/:path*",
+    "/api/site-content",
+    "/api/site-content/:path*",
+    "/api/nav-links",
+    "/api/nav-links/:path*",
   ],
 };

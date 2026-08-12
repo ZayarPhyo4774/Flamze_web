@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
 import { authorizeRequest } from "@/lib/auth";
+import { parseOptionalSafeHref } from "@/lib/safe-href";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -27,11 +28,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 export async function PUT(request: NextRequest, { params }: RouteParams) {
+  const authError = await authorizeRequest(request);
+  if (authError) return authError;
+
   const { id } = await params;
 
   try {
     const body = await request.json();
-    const { name, slug, address, phone, openingHours, mapUrl } = body;
+    const { name, slug, address, phone, openingHours, mapUrl, imageUrl } = body;
 
     const current = await prisma.branch.findUnique({ where: { id } });
     if (!current) {
@@ -47,6 +51,24 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       }
     }
 
+    let validatedMapUrl: string | null | undefined = undefined;
+    if (mapUrl !== undefined) {
+      const mapUrlResult = parseOptionalSafeHref(mapUrl, "mapUrl");
+      if ("error" in mapUrlResult) {
+        return NextResponse.json({ error: mapUrlResult.error }, { status: 400 });
+      }
+      validatedMapUrl = mapUrlResult.value;
+    }
+
+    let validatedImageUrl: string | null | undefined = undefined;
+    if (imageUrl !== undefined) {
+      const imageUrlResult = parseOptionalSafeHref(imageUrl, "imageUrl");
+      if ("error" in imageUrlResult) {
+        return NextResponse.json({ error: imageUrlResult.error }, { status: 400 });
+      }
+      validatedImageUrl = imageUrlResult.value;
+    }
+
     const branch = await prisma.branch.update({
       where: { id },
       data: {
@@ -55,7 +77,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         ...(address !== undefined && { address: optionalText(address) }),
         ...(phone !== undefined && { phone: optionalText(phone) }),
         ...(openingHours !== undefined && { openingHours: optionalText(openingHours) }),
-        ...(mapUrl !== undefined && { mapUrl: optionalText(mapUrl) }),
+        ...(validatedMapUrl !== undefined && { mapUrl: validatedMapUrl }),
+        ...(validatedImageUrl !== undefined && { imageUrl: validatedImageUrl }),
       },
       include: { _count: { select: { menuItems: true } } },
     });
@@ -66,7 +89,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
+  const authError = await authorizeRequest(request);
+  if (authError) return authError;
+
   const { id } = await params;
 
   try {

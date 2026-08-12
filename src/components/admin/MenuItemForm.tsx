@@ -9,7 +9,13 @@ import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import type { MenuItemFormData } from "@/lib/types";
 
 type Branch = { id: string; slug: string; name: string };
-type Category = { id: string; slug: string; name: string };
+type Category = {
+  id: string;
+  slug: string;
+  name: string;
+  parentId?: string | null;
+  parent?: { id: string; name: string } | null;
+};
 
 interface MenuItemFormProps {
   open: boolean;
@@ -213,7 +219,7 @@ function MenuItemFormBody({
         >
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.name}
+              {c.parent?.name ? `${c.parent.name} / ${c.name}` : c.name}
             </option>
           ))}
         </select>

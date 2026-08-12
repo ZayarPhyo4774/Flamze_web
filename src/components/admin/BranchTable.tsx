@@ -15,6 +15,7 @@ type BranchRow = {
   phone: string | null;
   openingHours: string | null;
   mapUrl: string | null;
+  imageUrl: string | null;
   _count?: { menuItems: number };
 };
 

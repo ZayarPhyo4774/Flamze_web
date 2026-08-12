@@ -6,20 +6,36 @@ import { Menu, Settings, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { useLocale } from "@/context/LocaleContext";
+import { getLocalizedField } from "@/i18n/translations";
 import { cn } from "@/lib/utils";
+import type { NavLinkContent } from "@/lib/types";
 
-const navItems = [
-  { labelKey: "home", href: "/#home" },
-  { labelKey: "menu", href: "/#signature" },
-  { labelKey: "branches", href: "/#branches" },
-  { labelKey: "locations", href: "/#locations" },
-  { labelKey: "about", href: "/#about" },
-] as const;
+const fallbackNav = [
+  { labelEn: "Home", labelMy: null, href: "/" },
+  { labelEn: "Menu", labelMy: null, href: "/#signature" },
+  { labelEn: "Branches", labelMy: null, href: "/#branches" },
+  { labelEn: "Locations", labelMy: null, href: "/#locations" },
+  { labelEn: "About", labelMy: null, href: "/#about" },
+];
 
-export function Navbar() {
-  const { t } = useLocale();
+interface NavbarProps {
+  navLinks?: NavLinkContent[];
+}
+
+export function Navbar({ navLinks }: NavbarProps) {
+  const { locale, t } = useLocale();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  const items =
+    navLinks && navLinks.length > 0
+      ? navLinks
+      : fallbackNav.map((item, index) => ({
+          id: `fallback-${index}`,
+          ...item,
+          sortOrder: index,
+          isVisible: true,
+        }));
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 24);
@@ -39,7 +55,7 @@ export function Navbar() {
     >
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
-          href="/#home"
+          href="/"
           className="group inline-flex items-center gap-3 text-white transition-colors hover:text-[#FFC107]"
           aria-label="Flamze home"
         >
@@ -62,13 +78,13 @@ export function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-5 lg:gap-8 md:flex">
-          {navItems.map((item) => (
+          {items.map((item) => (
             <Link
-              key={item.href}
+              key={item.id}
               href={item.href}
               className="text-xs font-semibold uppercase tracking-[0.22em] text-zinc-300 transition-colors hover:text-[#FFC107]"
             >
-              {t.nav[item.labelKey]}
+              {getLocalizedField(locale, item.labelEn, item.labelMy)}
             </Link>
           ))}
         </div>
@@ -104,14 +120,14 @@ export function Navbar() {
       {isOpen && (
         <div className="border-t border-white/10 bg-[#0F0F0F] px-4 pb-5 md:hidden">
           <div className="flex flex-col gap-1 py-4">
-            {navItems.map((item) => (
+            {items.map((item) => (
               <Link
-                key={item.href}
+                key={item.id}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
                 className="rounded px-3 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-zinc-200 transition-colors hover:bg-white/5 hover:text-[#FFC107]"
               >
-                {t.nav[item.labelKey]}
+                {getLocalizedField(locale, item.labelEn, item.labelMy)}
               </Link>
             ))}
           </div>

@@ -7,12 +7,18 @@ import { Button } from "@/components/ui/Button";
 import { slugify } from "@/lib/utils";
 import type { CategoryFormData } from "@/lib/types";
 
+interface ParentOption {
+  id: string;
+  name: string;
+}
+
 interface CategoryFormProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: CategoryFormData) => Promise<void>;
   initialData?: CategoryFormData;
   title?: string;
+  parentOptions?: ParentOption[];
 }
 
 const emptyForm: CategoryFormData = {
@@ -20,16 +26,19 @@ const emptyForm: CategoryFormData = {
   nameMy: "",
   slug: "",
   sortOrder: 0,
+  parentId: null,
 };
 
 function CategoryFormBody({
   initialData,
   onSubmit,
   onClose,
+  parentOptions = [],
 }: {
   initialData?: CategoryFormData;
   onSubmit: (data: CategoryFormData) => Promise<void>;
   onClose: () => void;
+  parentOptions?: ParentOption[];
 }) {
   const [form, setForm] = useState<CategoryFormData>(initialData ?? emptyForm);
   const [slugEdited, setSlugEdited] = useState(!!initialData?.slug);
@@ -47,7 +56,10 @@ function CategoryFormBody({
     e.preventDefault();
     setSubmitting(true);
     try {
-      await onSubmit(form);
+      await onSubmit({
+        ...form,
+        parentId: form.parentId || null,
+      });
       onClose();
     } finally {
       setSubmitting(false);
@@ -85,6 +97,30 @@ function CategoryFormBody({
         placeholder="hotpot"
       />
 
+      <div className="space-y-1.5">
+        <label htmlFor="category-parent" className="block text-sm font-medium text-zinc-300">
+          Parent Category (optional)
+        </label>
+        <select
+          id="category-parent"
+          value={form.parentId ?? ""}
+          onChange={(e) =>
+            setForm({ ...form, parentId: e.target.value || null })
+          }
+          className="w-full rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-2.5 text-sm text-white focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20"
+        >
+          <option value="">None (top-level)</option>
+          {parentOptions.map((parent) => (
+            <option key={parent.id} value={parent.id}>
+              {parent.name}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-zinc-500">
+          Choose a top-level category to create a subcategory.
+        </p>
+      </div>
+
       <Input
         id="category-sort"
         label="Sort Order"
@@ -117,6 +153,7 @@ export function CategoryForm({
   onSubmit,
   initialData,
   title = "Add Category",
+  parentOptions = [],
 }: CategoryFormProps) {
   const formKey = initialData?.slug ?? "new";
 
@@ -128,6 +165,7 @@ export function CategoryForm({
           initialData={initialData}
           onSubmit={onSubmit}
           onClose={onClose}
+          parentOptions={parentOptions}
         />
       ) : null}
     </Modal>

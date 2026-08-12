@@ -6,7 +6,7 @@ import { ChevronRight, Star } from "lucide-react";
 import { useLocale } from "@/context/LocaleContext";
 import { getLocalizedField } from "@/i18n/translations";
 import { formatPrice } from "@/lib/utils";
-import type { MenuItemWithCategory } from "@/lib/types";
+import type { LandingSectionContent, MenuItemWithCategory } from "@/lib/types";
 
 const fallbackImages = [
   "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=1200&q=85",
@@ -17,10 +17,21 @@ const fallbackImages = [
 
 interface FeaturedMenuProps {
   menuItems: MenuItemWithCategory[];
+  content?: LandingSectionContent;
 }
 
-export function FeaturedMenu({ menuItems }: FeaturedMenuProps) {
+export function FeaturedMenu({ menuItems, content }: FeaturedMenuProps) {
   const { locale, t } = useLocale();
+  const eyebrow =
+    getLocalizedField(locale, content?.eyebrowEn ?? "", content?.eyebrowMy) ||
+    t.landing.signatureEyebrow;
+  const title =
+    getLocalizedField(locale, content?.titleEn ?? "", content?.titleMy) ||
+    t.landing.signatureTitle;
+  const ctaLabel =
+    getLocalizedField(locale, content?.ctaLabelEn ?? "", content?.ctaLabelMy) ||
+    t.landing.viewFullMenu;
+  const ctaHref = content?.ctaHref || "/#branches";
 
   return (
     <section id="signature" className="scroll-reveal bg-[#0F0F0F] px-4 py-24 sm:px-6">
@@ -28,17 +39,17 @@ export function FeaturedMenu({ menuItems }: FeaturedMenuProps) {
         <div className="mb-12 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.34em] text-[#FFC107]">
-              {t.landing.signatureEyebrow}
+              {eyebrow}
             </p>
             <h2 className="text-4xl font-black uppercase tracking-[0.08em] text-white sm:text-5xl">
-              {t.landing.signatureTitle}
+              {title}
             </h2>
           </div>
           <Link
-            href="/#branches"
+            href={ctaHref}
             className="group inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.2em] text-zinc-300 transition-colors hover:text-[#FFC107]"
           >
-            {t.landing.viewFullMenu}
+            {ctaLabel}
             <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>

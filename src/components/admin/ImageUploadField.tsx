@@ -6,6 +6,7 @@ import { Upload, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
+import { adminHeaders } from "@/lib/admin-fetch";
 
 interface ImageUploadFieldProps {
   value: string;
@@ -32,7 +33,7 @@ export function ImageUploadField({
 
       const res = await fetch("/api/upload", {
         method: "POST",
-        headers: { "x-flamze-csrf": "1" },
+        headers: adminHeaders(),
         body: formData,
       });
       const data = await res.json();

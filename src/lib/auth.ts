@@ -1,10 +1,15 @@
+import { randomBytes } from "node:crypto";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import {
+  ADMIN_CSRF_HEADER,
+  CSRF_COOKIE,
+  SESSION_COOKIE,
+} from "@/lib/auth-constants";
 
-export const SESSION_COOKIE = "flamze-admin-session";
-export const ADMIN_CSRF_HEADER = "x-flamze-csrf";
+export { ADMIN_CSRF_HEADER, CSRF_COOKIE, SESSION_COOKIE } from "@/lib/auth-constants";
 const SESSION_MAX_AGE = 60 * 60 * 8; // 8 hours
 
 function getSecret() {
@@ -23,26 +28,46 @@ function getAdminPassword() {
   return adminPassword;
 }
 
-export async function createSessionToken() {
-  return new SignJWT({ role: "admin" })
+export function generateCsrfToken() {
+  return randomBytes(32).toString("hex");
+}
+
+export async function createSessionToken(csrfToken: string) {
+  return new SignJWT({ role: "admin", csrf: csrfToken })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${SESSION_MAX_AGE}s`)
     .sign(getSecret());
 }
 
-export async function verifySessionToken(token: string) {
+async function getSessionPayload(token: string) {
   try {
     const { payload } = await jwtVerify(token, getSecret());
-    return payload.role === "admin";
+    if (payload.role !== "admin") return null;
+    return payload;
   } catch {
-    return false;
+    return null;
   }
+}
+
+export async function verifySessionToken(token: string) {
+  const payload = await getSessionPayload(token);
+  return payload !== null;
 }
 
 export function getSessionCookieOptions(maxAge = SESSION_MAX_AGE) {
   return {
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict" as const,
+    maxAge,
+    path: "/",
+  };
+}
+
+export function getCsrfCookieOptions(maxAge = SESSION_MAX_AGE) {
+  return {
+    httpOnly: false,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict" as const,
     maxAge,
@@ -65,12 +90,23 @@ export async function verifyRequestAuth(request: NextRequest): Promise<boolean> 
 
 export async function authorizeRequest(request: NextRequest) {
   const token = request.cookies.get(SESSION_COOKIE)?.value;
-  if (!token || !(await verifySessionToken(token))) {
+  if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (request.method !== "GET" && request.headers.get(ADMIN_CSRF_HEADER) !== "1") {
-    return NextResponse.json({ error: "Invalid CSRF token" }, { status: 403 });
+  const payload = await getSessionPayload(token);
+  if (!payload) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (request.method !== "GET") {
+    const headerToken = request.headers.get(ADMIN_CSRF_HEADER);
+    const cookieToken = request.cookies.get(CSRF_COOKIE)?.value;
+    const jwtCsrf = typeof payload.csrf === "string" ? payload.csrf : undefined;
+
+    if (!headerToken || !cookieToken || headerToken !== cookieToken || headerToken !== jwtCsrf) {
+      return NextResponse.json({ error: "Invalid CSRF token" }, { status: 403 });
+    }
   }
 
   return null;

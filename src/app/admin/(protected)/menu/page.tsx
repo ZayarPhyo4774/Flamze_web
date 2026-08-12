@@ -9,6 +9,7 @@ import { MenuItemForm } from "@/components/admin/MenuItemForm";
 import { MenuItemSelector } from "@/components/admin/MenuItemSelector";
 import { Button } from "@/components/ui/Button";
 import type { MenuItemFormData } from "@/lib/types";
+import { adminHeaders } from "@/lib/admin-fetch";
 
 type Branch = { id: string; slug: string; name: string };
 type Category = { id: string; slug: string; name: string };
@@ -105,7 +106,7 @@ function AdminMenuPageContent() {
   const handleCreate = async (data: MenuItemFormData) => {
     const response = await fetch("/api/menu-items", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-flamze-csrf": "1" },
+      headers: adminHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(data),
     });
 
@@ -122,7 +123,7 @@ function AdminMenuPageContent() {
 
     const response = await fetch(`/api/menu-items/${editingItem.id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json", "x-flamze-csrf": "1" },
+      headers: adminHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(data),
     });
 
@@ -136,7 +137,7 @@ function AdminMenuPageContent() {
   };
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/menu-items/${id}`, { method: "DELETE", headers: { "x-flamze-csrf": "1" } });
+    await fetch(`/api/menu-items/${id}`, { method: "DELETE", headers: adminHeaders() });
     await refreshData();
   };
 
@@ -299,7 +300,7 @@ function AdminMenuPageContent() {
             if (!branchIdFromUrl) return;
             await fetch("/api/menu-items/copy", {
               method: "POST",
-              headers: { "Content-Type": "application/json", "x-flamze-csrf": "1" },
+              headers: adminHeaders({ "Content-Type": "application/json" }),
               body: JSON.stringify({ sourceItemIds, branchId: branchIdFromUrl }),
             });
             setSelectorOpen(false);

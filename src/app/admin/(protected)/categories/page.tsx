@@ -7,6 +7,7 @@ import { CategoryTable, type CategoryRow } from "@/components/admin/CategoryTabl
 import { CategoryForm } from "@/components/admin/CategoryForm";
 import { Button } from "@/components/ui/Button";
 import type { CategoryFormData } from "@/lib/types";
+import { adminHeaders } from "@/lib/admin-fetch";
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<CategoryRow[]>([]);
@@ -44,7 +45,7 @@ export default function AdminCategoriesPage() {
     setError(null);
     const res = await fetch("/api/categories", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-flamze-csrf": "1" },
+      headers: adminHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(data),
     });
     if (!res.ok) {
@@ -60,7 +61,7 @@ export default function AdminCategoriesPage() {
     setError(null);
     const res = await fetch(`/api/categories/${editingCategory.id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json", "x-flamze-csrf": "1" },
+      headers: adminHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(data),
     });
     if (!res.ok) {
@@ -74,7 +75,7 @@ export default function AdminCategoriesPage() {
 
   const handleDelete = async (id: string) => {
     setError(null);
-    const res = await fetch(`/api/categories/${id}`, { method: "DELETE", headers: { "x-flamze-csrf": "1" } });
+    const res = await fetch(`/api/categories/${id}`, { method: "DELETE", headers: adminHeaders() });
     if (!res.ok) {
       const err = await res.json();
       setError(err.error ?? "Failed to delete category");
@@ -143,9 +144,13 @@ export default function AdminCategoriesPage() {
                   nameMy: editingCategory.nameMy ?? "",
                   slug: editingCategory.slug,
                   sortOrder: editingCategory.sortOrder,
+                  parentId: editingCategory.parentId ?? null,
                 }
               : undefined
           }
+          parentOptions={categories
+            .filter((c) => !c.parentId && c.id !== editingCategory?.id)
+            .map((c) => ({ id: c.id, name: c.name }))}
         />
       </main>
     </div>

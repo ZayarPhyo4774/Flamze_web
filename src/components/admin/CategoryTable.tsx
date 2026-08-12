@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -11,7 +11,9 @@ type CategoryRow = {
   name: string;
   nameMy: string | null;
   sortOrder: number;
-  _count?: { menuItems: number };
+  parentId?: string | null;
+  parent?: { id: string; name: string; slug: string } | null;
+  _count?: { menuItems: number; children?: number };
 };
 
 interface CategoryTableProps {
@@ -22,6 +24,39 @@ interface CategoryTableProps {
 
 export function CategoryTable({ categories, onEdit, onDelete }: CategoryTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const ordered = useMemo(() => {
+    const parents = categories
+      .filter((c) => !c.parentId)
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+    const childrenByParent = new Map<string, CategoryRow[]>();
+    for (const category of categories) {
+      if (!category.parentId) continue;
+      const list = childrenByParent.get(category.parentId) ?? [];
+      list.push(category);
+      childrenByParent.set(category.parentId, list);
+    }
+    for (const list of childrenByParent.values()) {
+      list.sort((a, b) => a.sortOrder - b.sortOrder);
+    }
+
+    const rows: Array<CategoryRow & { depth: number }> = [];
+    for (const parent of parents) {
+      rows.push({ ...parent, depth: 0 });
+      for (const child of childrenByParent.get(parent.id) ?? []) {
+        rows.push({ ...child, depth: 1 });
+      }
+    }
+
+    // Orphans (parent missing) still show
+    const shown = new Set(rows.map((r) => r.id));
+    for (const category of categories) {
+      if (!shown.has(category.id)) {
+        rows.push({ ...category, depth: category.parentId ? 1 : 0 });
+      }
+    }
+    return rows;
+  }, [categories]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this category?")) return;
@@ -52,13 +87,18 @@ export function CategoryTable({ categories, onEdit, onDelete }: CategoryTablePro
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-800/50">
-            {categories.map((category) => (
+            {ordered.map((category) => (
               <tr
                 key={category.id}
-                className="bg-zinc-950/50 hover:bg-zinc-900/30 transition-colors"
+                className="bg-zinc-950/50 transition-colors hover:bg-zinc-900/30"
               >
                 <td className="px-4 py-3 text-zinc-400">{category.sortOrder}</td>
-                <td className="px-4 py-3 font-medium text-white">{category.name}</td>
+                <td className="px-4 py-3 font-medium text-white">
+                  <span className={category.depth ? "pl-6 text-zinc-200" : ""}>
+                    {category.depth ? "↳ " : ""}
+                    {category.name}
+                  </span>
+                </td>
                 <td className="px-4 py-3">
                   <Badge variant="gold">{category.slug}</Badge>
                 </td>

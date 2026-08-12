@@ -9,6 +9,7 @@ import { BranchForm } from "@/components/admin/BranchForm";
 import { QrCodeCard } from "@/components/admin/QrCodeCard";
 import { Button } from "@/components/ui/Button";
 import type { BranchFormData } from "@/lib/types";
+import { adminHeaders } from "@/lib/admin-fetch";
 
 export default function AdminBranchesPage() {
   const [branches, setBranches] = useState<BranchRow[]>([]);
@@ -45,7 +46,7 @@ export default function AdminBranchesPage() {
   const handleCreate = async (data: BranchFormData) => {
     const res = await fetch("/api/branches", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-flamze-csrf": "1" },
+      headers: adminHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(data),
     });
 
@@ -61,7 +62,7 @@ export default function AdminBranchesPage() {
     if (!editingBranch) return;
     await fetch(`/api/branches/${editingBranch.id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json", "x-flamze-csrf": "1" },
+      headers: adminHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(data),
     });
     setEditingBranch(null);
@@ -69,7 +70,7 @@ export default function AdminBranchesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/branches/${id}`, { method: "DELETE", headers: { "x-flamze-csrf": "1" } });
+    await fetch(`/api/branches/${id}`, { method: "DELETE", headers: adminHeaders() });
     await refreshBranches();
   };
 
@@ -149,6 +150,7 @@ export default function AdminBranchesPage() {
                   phone: editingBranch.phone ?? "",
                   openingHours: editingBranch.openingHours ?? "",
                   mapUrl: editingBranch.mapUrl ?? "",
+                  imageUrl: editingBranch.imageUrl ?? "",
                 }
               : undefined
           }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authorizeRequest } from "@/lib/auth";
+import { parseOptionalSafeHref } from "@/lib/safe-href";
 
 export async function GET(request: NextRequest) {
   const authError = await authorizeRequest(request);
@@ -56,6 +57,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const imageResult = parseOptionalSafeHref(image, "image");
+    if ("error" in imageResult) {
+      return NextResponse.json({ error: imageResult.error }, { status: 400 });
+    }
+
     const item = await prisma.menuItem.create({
       data: {
         name,
@@ -63,7 +69,7 @@ export async function POST(request: NextRequest) {
         description: description || null,
         descriptionMy: descriptionMy?.trim() || null,
         price: parseFloat(price),
-        image: image || null,
+        image: imageResult.value,
         rating: typeof rating === "number" ? Math.min(Math.max(rating, 0), 5) : 0,
         branchId: branchIds[0],
         categoryId,
@@ -87,9 +93,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Failed to create menu item", error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to create menu item" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create menu item" }, { status: 500 });
   }
 }

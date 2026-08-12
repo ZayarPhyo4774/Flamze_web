@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   createSessionToken,
+  generateCsrfToken,
+  getCsrfCookieOptions,
   getSessionCookieOptions,
+  CSRF_COOKIE,
   SESSION_COOKIE,
   SESSION_MAX_AGE,
   verifyPassword,
@@ -39,10 +42,12 @@ export async function POST(request: NextRequest) {
     // successful login: reset attempts
     loginAttempts.delete(key);
 
-    const token = await createSessionToken();
+    const csrfToken = generateCsrfToken();
+    const token = await createSessionToken(csrfToken);
     const response = NextResponse.json({ success: true });
 
     response.cookies.set(SESSION_COOKIE, token, getSessionCookieOptions(SESSION_MAX_AGE));
+    response.cookies.set(CSRF_COOKIE, csrfToken, getCsrfCookieOptions(SESSION_MAX_AGE));
 
     return response;
   } catch {

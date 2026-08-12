@@ -16,6 +16,7 @@ model Branch {
   phone           String?
   openingHours    String?
   mapUrl          String?
+  imageUrl        String?
   menuItems       MenuItem[]
   branchMenuItems BranchMenuItem[]
   menuViews       MenuView[]
@@ -29,7 +30,12 @@ model Category {
   name      String
   nameMy    String?
   sortOrder Int        @default(0)
+  parentId  String?
+  parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children  Category[] @relation("CategoryTree")
   menuItems MenuItem[]
+
+  @@index([parentId])
 }
 
 model MenuItem {
@@ -75,4 +81,51 @@ model MenuView {
   createdAt DateTime @default(now())
 
   @@index([branchId, createdAt])
+}
+
+model LandingPage {
+  id            String   @id @default("default")
+  eyebrowEn     String   @default("")
+  eyebrowMy     String?
+  titleEn       String   @default("")
+  titleMy       String?
+  subtitleEn    String   @default("")
+  subtitleMy    String?
+  ctaLabelEn    String   @default("")
+  ctaLabelMy    String?
+  ctaHref       String   @default("/menu?branch=yangon")
+  heroVideoUrl       String   @default("/video/hero.mp4")
+  heroVideoUrlMobile String?
+  heroPosterUrl      String?
+  heroPosterUrlMobile String?
+  updatedAt     DateTime @updatedAt
+}
+
+model LandingSection {
+  id             String   @id @default(cuid())
+  key            String   @unique
+  sortOrder      Int      @default(0)
+  isVisible      Boolean  @default(true)
+  eyebrowEn      String?
+  eyebrowMy      String?
+  titleEn        String?
+  titleMy        String?
+  descriptionEn  String?
+  descriptionMy  String?
+  ctaLabelEn     String?
+  ctaLabelMy     String?
+  ctaHref        String?
+  imageUrl       String?
+  updatedAt      DateTime @updatedAt
+}
+
+model NavLink {
+  id        String   @id @default(cuid())
+  labelEn   String
+  labelMy   String?
+  href      String
+  sortOrder Int      @default(0)
+  isVisible Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

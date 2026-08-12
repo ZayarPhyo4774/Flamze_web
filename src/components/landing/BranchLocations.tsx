@@ -1,16 +1,31 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, Clock, MapPin, Navigation, Phone } from "lucide-react";
 import { useLocale } from "@/context/LocaleContext";
-import type { BranchSummary } from "@/lib/types";
+import { getLocalizedField } from "@/i18n/translations";
+import { BranchMapPanel } from "@/components/landing/BranchMapPanel";
+import type { BranchMapPoint } from "@/lib/branch-map-points";
+import type { BranchSummary, LandingSectionContent } from "@/lib/types";
 
 interface BranchLocationsProps {
   branches: BranchSummary[];
+  mapPoints: BranchMapPoint[];
+  content?: LandingSectionContent;
 }
 
-export function BranchLocations({ branches }: BranchLocationsProps) {
-  const { t } = useLocale();
+export function BranchLocations({ branches, mapPoints, content }: BranchLocationsProps) {
+  const { locale, t } = useLocale();
+  const eyebrow =
+    getLocalizedField(locale, content?.eyebrowEn ?? "", content?.eyebrowMy) ||
+    t.landing.locationsEyebrow;
+  const title =
+    getLocalizedField(locale, content?.titleEn ?? "", content?.titleMy) ||
+    t.landing.locationsTitle;
+  const description =
+    getLocalizedField(locale, content?.descriptionEn ?? "", content?.descriptionMy) ||
+    t.landing.locationsDescription;
 
   if (branches.length === 0) {
     return null;
@@ -24,46 +39,52 @@ export function BranchLocations({ branches }: BranchLocationsProps) {
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <div>
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.34em] text-[#FFC107]">
-            {t.landing.locationsEyebrow}
+            {eyebrow}
           </p>
           <h2 className="max-w-xl text-4xl font-black uppercase leading-tight tracking-[0.08em] text-white sm:text-5xl">
-            {t.landing.locationsTitle}
+            {title}
           </h2>
           <p className="mt-5 max-w-xl text-base leading-8 text-zinc-400">
-            {t.landing.locationsDescription}
+            {description}
           </p>
 
           <div className="mt-8 overflow-hidden rounded border border-white/10 bg-black">
             <div className="relative min-h-[360px]">
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.07)_1px,transparent_1px)] bg-[size:42px_42px]" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(229,57,53,0.32),transparent_28%),radial-gradient(circle_at_72%_70%,rgba(255,193,7,0.24),transparent_28%)]" />
-              <div className="absolute left-8 right-10 top-1/2 h-1 -translate-y-1/2 rotate-[-12deg] bg-[#FFC107]/70 shadow-[0_0_28px_rgba(255,193,7,0.45)]" />
-              <div className="absolute bottom-12 left-14 top-10 w-1 rotate-[18deg] bg-[#E53935]/70 shadow-[0_0_28px_rgba(229,57,53,0.45)]" />
+              {mapPoints.length > 0 ? (
+                <BranchMapPanel points={mapPoints} />
+              ) : (
+                <>
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.07)_1px,transparent_1px)] bg-[size:42px_42px]" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(229,57,53,0.32),transparent_28%),radial-gradient(circle_at_72%_70%,rgba(255,193,7,0.24),transparent_28%)]" />
+                  <div className="absolute left-8 right-10 top-1/2 h-1 -translate-y-1/2 rotate-[-12deg] bg-[#FFC107]/70 shadow-[0_0_28px_rgba(255,193,7,0.45)]" />
+                  <div className="absolute bottom-12 left-14 top-10 w-1 rotate-[18deg] bg-[#E53935]/70 shadow-[0_0_28px_rgba(229,57,53,0.45)]" />
 
-              {(() => {
-                const pinPositions =
-                  branches.length === 1
-                    ? ["left-1/2 top-1/2"]
-                    : [
-                        "left-[18%] top-[22%]",
-                        "right-[18%] top-[30%]",
-                        "left-[36%] bottom-[18%]",
-                        "right-[28%] bottom-[24%]",
-                      ];
+                  {(() => {
+                    const pinPositions =
+                      branches.length === 1
+                        ? ["left-1/2 top-1/2"]
+                        : [
+                            "left-[18%] top-[22%]",
+                            "right-[18%] top-[30%]",
+                            "left-[36%] bottom-[18%]",
+                            "right-[28%] bottom-[24%]",
+                          ];
 
-                return branches.slice(0, 4).map((branch, index) => (
-                  <Link
-                    key={branch.id}
-                    href={`/menu?branch=${branch.slug}`}
-                    className={`absolute ${pinPositions[index] ?? pinPositions[0]} group flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-[#FFC107]/60 bg-black/80 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white shadow-2xl shadow-black/50 backdrop-blur transition-all duration-300 hover:border-[#FFC107] hover:bg-[#FFC107] hover:text-black`}
-                  >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#E53935] text-white">
-                      <MapPin className="h-4 w-4" />
-                    </span>
-                    <span className="max-w-28 truncate">{branch.name}</span>
-                  </Link>
-                ));
-              })()}
+                    return branches.slice(0, 4).map((branch, index) => (
+                      <Link
+                        key={branch.id}
+                        href={`/menu?branch=${branch.slug}`}
+                        className={`absolute ${pinPositions[index] ?? pinPositions[0]} group flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-[#FFC107]/60 bg-black/80 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white shadow-2xl shadow-black/50 backdrop-blur transition-all duration-300 hover:border-[#FFC107] hover:bg-[#FFC107] hover:text-black`}
+                      >
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#E53935] text-white">
+                          <MapPin className="h-4 w-4" />
+                        </span>
+                        <span className="max-w-28 truncate">{branch.name}</span>
+                      </Link>
+                    ));
+                  })()}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -72,9 +93,21 @@ export function BranchLocations({ branches }: BranchLocationsProps) {
           {branches.map((branch, index) => (
             <article
               key={branch.id}
-              className={`group rounded border border-white/10 bg-black p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#FFC107]/60 hover:bg-[#151515] ${branches.length === 1 ? "w-full sm:w-[540px]" : "w-full"}`}
+              className={`group overflow-hidden rounded border border-white/10 bg-black transition-all duration-300 hover:-translate-y-1 hover:border-[#FFC107]/60 hover:bg-[#151515] ${branches.length === 1 ? "w-full sm:w-[540px]" : "w-full"}`}
             >
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex flex-col sm:flex-row">
+                {branch.imageUrl && (
+                  <div className="relative aspect-[16/10] w-full shrink-0 sm:aspect-auto sm:w-44 sm:self-stretch">
+                    <Image
+                      src={branch.imageUrl}
+                      alt={`${branch.name} branch`}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 176px"
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+                <div className="flex flex-1 flex-col gap-5 p-5 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                   <div className="mb-3 flex items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-[#E53935] text-sm font-black text-white">
@@ -136,6 +169,7 @@ export function BranchLocations({ branches }: BranchLocationsProps) {
                     {t.landing.viewMenu}
                     <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
+                </div>
                 </div>
               </div>
             </article>

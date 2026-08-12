@@ -3,6 +3,9 @@
 import Image from "next/image";
 import { Flame, Sparkles, Utensils } from "lucide-react";
 import { useLocale } from "@/context/LocaleContext";
+import { getLocalizedField } from "@/i18n/translations";
+import type { LandingSectionContent } from "@/lib/types";
+import { LANDING_IMAGE_DEFAULTS } from "@/lib/landing-images";
 
 const highlights = [
   { icon: Flame, labelKey: "highlightBbq" },
@@ -10,15 +13,29 @@ const highlights = [
   { icon: Sparkles, labelKey: "highlightBroths" },
 ] as const;
 
-export function About() {
-  const { t } = useLocale();
+interface AboutProps {
+  content?: LandingSectionContent;
+}
+
+export function About({ content }: AboutProps) {
+  const { locale, t } = useLocale();
+  const eyebrow =
+    getLocalizedField(locale, content?.eyebrowEn ?? "", content?.eyebrowMy) ||
+    t.landing.aboutEyebrow;
+  const title =
+    getLocalizedField(locale, content?.titleEn ?? "", content?.titleMy) ||
+    t.landing.aboutTitle;
+  const description =
+    getLocalizedField(locale, content?.descriptionEn ?? "", content?.descriptionMy) ||
+    t.landing.aboutDescription;
+  const imageSrc = content?.imageUrl || LANDING_IMAGE_DEFAULTS.about;
 
   return (
     <section id="about" className="scroll-reveal bg-[#0F0F0F] px-4 py-24 sm:px-6">
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_0.9fr] lg:items-center">
         <div className="relative min-h-[420px] overflow-hidden rounded border border-white/10">
           <Image
-            src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1600&q=85"
+            src={imageSrc}
             alt="Elegant restaurant dining interior"
             fill
             sizes="(max-width: 1024px) 100vw, 50vw"
@@ -37,13 +54,13 @@ export function About() {
 
         <div>
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.34em] text-[#FFC107]">
-            {t.landing.aboutEyebrow}
+            {eyebrow}
           </p>
           <h2 className="text-4xl font-black uppercase leading-tight tracking-[0.08em] text-white sm:text-5xl">
-            {t.landing.aboutTitle}
+            {title}
           </h2>
           <p className="mt-6 text-base leading-8 text-zinc-400">
-            {t.landing.aboutDescription}
+            {description}
           </p>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3">

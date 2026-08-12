@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
 import { authorizeRequest } from "@/lib/auth";
+import { parseOptionalSafeHref } from "@/lib/safe-href";
 
 const optionalText = (value: unknown) =>
   typeof value === "string" && value.trim() ? value.trim() : null;
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, slug, address, phone, openingHours, mapUrl } = body;
+    const { name, slug, address, phone, openingHours, mapUrl, imageUrl } = body;
 
     if (!name?.trim()) {
       return NextResponse.json({ error: "name is required" }, { status: 400 });
@@ -43,6 +44,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Branch slug already exists" }, { status: 409 });
     }
 
+    const mapUrlResult = parseOptionalSafeHref(mapUrl, "mapUrl");
+    if ("error" in mapUrlResult) {
+      return NextResponse.json({ error: mapUrlResult.error }, { status: 400 });
+    }
+
+    const imageUrlResult = parseOptionalSafeHref(imageUrl, "imageUrl");
+    if ("error" in imageUrlResult) {
+      return NextResponse.json({ error: imageUrlResult.error }, { status: 400 });
+    }
+
     const branch = await prisma.branch.create({
       data: {
         name: name.trim(),
@@ -50,7 +61,8 @@ export async function POST(request: NextRequest) {
         address: optionalText(address),
         phone: optionalText(phone),
         openingHours: optionalText(openingHours),
-        mapUrl: optionalText(mapUrl),
+        mapUrl: mapUrlResult.value,
+        imageUrl: imageUrlResult.value,
       },
       include: { _count: { select: { menuItems: true } } },
     });

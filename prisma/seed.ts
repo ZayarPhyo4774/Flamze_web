@@ -134,8 +134,116 @@ const MENU_ITEMS = [
   },
 ];
 
+async function seedSiteContent() {
+  const { translations } = await import("../src/i18n/translations");
+  const en = translations.en;
+  const my = translations.my;
+
+  await prisma.landingPage.upsert({
+    where: { id: "default" },
+    update: {},
+    create: {
+      id: "default",
+      eyebrowEn: en.hero.eyebrow,
+      eyebrowMy: my.hero.eyebrow,
+      titleEn: en.hero.title,
+      titleMy: my.hero.title,
+      subtitleEn: en.hero.subtitle,
+      subtitleMy: my.hero.subtitle,
+      ctaLabelEn: en.hero.viewMenu,
+      ctaLabelMy: my.hero.viewMenu,
+      ctaHref: "/menu?branch=yangon",
+      heroVideoUrl: "/video/hero.mp4",
+    },
+  });
+
+  const sections = [
+    {
+      key: "signature",
+      sortOrder: 10,
+      eyebrowEn: en.landing.signatureEyebrow,
+      eyebrowMy: my.landing.signatureEyebrow,
+      titleEn: en.landing.signatureTitle,
+      titleMy: my.landing.signatureTitle,
+      ctaLabelEn: en.landing.viewFullMenu,
+      ctaLabelMy: my.landing.viewFullMenu,
+      ctaHref: "/#branches",
+    },
+    {
+      key: "branches",
+      sortOrder: 20,
+      eyebrowEn: en.landing.branchesEyebrow,
+      eyebrowMy: my.landing.branchesEyebrow,
+      titleEn: en.landing.branchesTitle,
+      titleMy: my.landing.branchesTitle,
+      descriptionEn: en.landing.branchesDescription,
+      descriptionMy: my.landing.branchesDescription,
+    },
+    {
+      key: "locations",
+      sortOrder: 30,
+      eyebrowEn: en.landing.locationsEyebrow,
+      eyebrowMy: my.landing.locationsEyebrow,
+      titleEn: en.landing.locationsTitle,
+      titleMy: my.landing.locationsTitle,
+      descriptionEn: en.landing.locationsDescription,
+      descriptionMy: my.landing.locationsDescription,
+    },
+    {
+      key: "about",
+      sortOrder: 40,
+      eyebrowEn: en.landing.aboutEyebrow,
+      eyebrowMy: my.landing.aboutEyebrow,
+      titleEn: en.landing.aboutTitle,
+      titleMy: my.landing.aboutTitle,
+      descriptionEn: en.landing.aboutDescription,
+      descriptionMy: my.landing.aboutDescription,
+    },
+    {
+      key: "cta",
+      sortOrder: 50,
+      eyebrowEn: en.landing.ctaEyebrow,
+      eyebrowMy: my.landing.ctaEyebrow,
+      titleEn: en.landing.ctaTitle,
+      titleMy: my.landing.ctaTitle,
+      ctaLabelEn: en.landing.viewFullMenu,
+      ctaLabelMy: my.landing.viewFullMenu,
+      ctaHref: "/#branches",
+    },
+    {
+      key: "footer",
+      sortOrder: 60,
+      descriptionEn: en.landing.footerDescription,
+      descriptionMy: my.landing.footerDescription,
+    },
+  ];
+
+  for (const section of sections) {
+    await prisma.landingSection.upsert({
+      where: { key: section.key },
+      update: {},
+      create: section,
+    });
+  }
+
+  const navCount = await prisma.navLink.count();
+  if (navCount === 0) {
+    await prisma.navLink.createMany({
+      data: [
+        { labelEn: en.nav.home, labelMy: my.nav.home, href: "/", sortOrder: 10 },
+        { labelEn: en.nav.menu, labelMy: my.nav.menu, href: "/#signature", sortOrder: 20 },
+        { labelEn: en.nav.branches, labelMy: my.nav.branches, href: "/#branches", sortOrder: 30 },
+        { labelEn: en.nav.locations, labelMy: my.nav.locations, href: "/#locations", sortOrder: 40 },
+        { labelEn: en.nav.about, labelMy: my.nav.about, href: "/#about", sortOrder: 50 },
+      ],
+    });
+  }
+}
+
 async function main() {
   console.log("Seeding database...");
+
+  await seedSiteContent();
 
   for (const cat of CATEGORIES) {
     await prisma.category.upsert({

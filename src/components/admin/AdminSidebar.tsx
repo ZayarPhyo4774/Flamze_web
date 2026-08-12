@@ -1,17 +1,34 @@
 "use client";
 
-import { BarChart3, Eye, LogOut } from "lucide-react";
+import {
+  BarChart3,
+  Eye,
+  LogOut,
+  LayoutDashboard,
+  UtensilsCrossed,
+  MapPin,
+  Home,
+  Tags,
+  PanelsTopLeft,
+  Navigation,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Flame, LayoutDashboard, UtensilsCrossed, MapPin, Home, Tags } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { adminHeaders } from "@/lib/admin-fetch";
 import Image from "next/image";
+
 const links = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/branches", label: "Branches & QR", icon: MapPin },
   { href: "/admin/categories", label: "Categories", icon: Tags },
   { href: "/admin/menu", label: "Menu Items", icon: UtensilsCrossed },
+];
+
+const contentLinks = [
+  { href: "/admin/content/landing", label: "Landing", icon: PanelsTopLeft },
+  { href: "/admin/content/navigation", label: "Navigation", icon: Navigation },
 ];
 
 export function AdminSidebar() {
@@ -21,24 +38,48 @@ export function AdminSidebar() {
   const handleLogout = async () => {
     await fetch("/api/auth/logout", {
       method: "POST",
-      headers: { "x-flamze-csrf": "1" },
+      headers: adminHeaders(),
     });
     router.push("/admin/login");
     router.refresh();
   };
 
+  const renderLink = ({
+    href,
+    label,
+    icon: Icon,
+  }: {
+    href: string;
+    label: string;
+    icon: typeof LayoutDashboard;
+  }) => (
+    <Link
+      key={href}
+      href={href}
+      className={cn(
+        "flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
+        pathname === href
+          ? "bg-red-600/10 text-red-400"
+          : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+      )}
+    >
+      <Icon className="h-4 w-4" />
+      {label}
+    </Link>
+  );
+
   return (
     <aside className="flex w-full flex-col border-b border-zinc-800 bg-zinc-950 lg:w-64 lg:border-b-0 lg:border-r lg:min-h-screen">
       <div className="flex items-center gap-3 border-b border-zinc-800 px-6 py-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white-600">
-           <Image
-               src="/flamze-logo.png"
-               alt=""
-               width={40}
-               height={40}
-               className="h-10 w-10 shrink-0 rounded shadow-lg shadow-red-950/40 transition-transform duration-300 group-hover:scale-105"
-               priority
-             />         
+          <Image
+            src="/flamze-logo.png"
+            alt=""
+            width={40}
+            height={40}
+            className="h-10 w-10 shrink-0 rounded shadow-lg shadow-red-950/40 transition-transform duration-300 group-hover:scale-105"
+            priority
+          />
         </div>
         <div>
           <p className="font-bold text-white">FLAMEZ</p>
@@ -47,34 +88,24 @@ export function AdminSidebar() {
       </div>
 
       <nav className="flex gap-1 overflow-x-auto p-3 lg:flex-col">
-        {links.map(({ href, label, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className={cn(
-              "flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
-              pathname === href
-                ? "bg-red-600/10 text-red-400"
-                : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
-            )}
-          >
-            <Icon className="h-4 w-4" />
-            {label}
-          </Link>
-        ))}
+        {links.map(renderLink)}
+        <div className="hidden px-4 pt-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-600 lg:block">
+          Content
+        </div>
+        {contentLinks.map(renderLink)}
       </nav>
 
-      <div className="mt-auto hidden p-3 lg:block space-y-1">
+      <div className="mt-auto hidden space-y-1 p-3 lg:block">
         <Link
           href="/"
-          className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm text-zinc-500 hover:bg-zinc-900 hover:text-white transition-colors"
+          className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-900 hover:text-white"
         >
           <Home className="h-4 w-4" />
           Back to Site
         </Link>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm text-zinc-500 hover:bg-zinc-900 hover:text-red-400 transition-colors"
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-900 hover:text-red-400"
         >
           <LogOut className="h-4 w-4" />
           Sign Out
@@ -84,7 +115,15 @@ export function AdminSidebar() {
   );
 }
 
-export function AnalyticsStat({ label, value, icon: Icon }: { label: string; value: number | string; icon: typeof Eye }) {
+export function AnalyticsStat({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: number | string;
+  icon: typeof Eye;
+}) {
   return (
     <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5">
       <div className="mb-3 flex items-center justify-between">

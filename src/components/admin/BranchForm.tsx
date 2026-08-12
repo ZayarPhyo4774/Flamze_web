@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { slugify } from "@/lib/utils";
 import type { BranchFormData } from "@/lib/types";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 
 interface BranchFormProps {
   open: boolean;
@@ -22,6 +23,7 @@ const emptyForm: BranchFormData = {
   phone: "",
   openingHours: "",
   mapUrl: "",
+  imageUrl: "",
 };
 
 function BranchFormBody({
@@ -112,8 +114,20 @@ function BranchFormBody({
         type="url"
         value={form.mapUrl ?? ""}
         onChange={(e) => setForm({ ...form, mapUrl: e.target.value })}
-        placeholder="https://maps.google.com/..."
+        placeholder="https://maps.google.com/?q=..."
       />
+      <p className="text-xs text-zinc-500">
+        Google Maps link or embed URL — shows in the map panel beside branch cards in the Locations section
+      </p>
+
+      <ImageUploadField
+        label="Branch Photo"
+        value={form.imageUrl ?? ""}
+        onChange={(url) => setForm({ ...form, imageUrl: url })}
+      />
+      <p className="-mt-1 text-xs text-zinc-500">
+        Shown beside this branch in the Locations section (not on Branches section cards)
+      </p>
 
       <div className="flex gap-3 pt-2">
         <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>

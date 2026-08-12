@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, MapPin } from "lucide-react";
 import { useLocale } from "@/context/LocaleContext";
-import type { BranchSummary } from "@/lib/types";
+import { getLocalizedField } from "@/i18n/translations";
+import type { BranchSummary, LandingSectionContent } from "@/lib/types";
 
 const branchImages = [
   "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85",
@@ -21,6 +22,7 @@ const fallbackBranches: BranchSummary[] = [
     phone: null,
     openingHours: null,
     mapUrl: null,
+    imageUrl: null,
   },
   {
     id: "mandalay",
@@ -30,29 +32,40 @@ const fallbackBranches: BranchSummary[] = [
     phone: null,
     openingHours: null,
     mapUrl: null,
+    imageUrl: null,
   },
 ];
 
 interface BranchesProps {
   branches: BranchSummary[];
+  content?: LandingSectionContent;
 }
 
-export function Branches({ branches }: BranchesProps) {
-  const { t } = useLocale();
+export function Branches({ branches, content }: BranchesProps) {
+  const { locale, t } = useLocale();
   const visibleBranches = branches.length > 0 ? branches : fallbackBranches;
+  const eyebrow =
+    getLocalizedField(locale, content?.eyebrowEn ?? "", content?.eyebrowMy) ||
+    t.landing.branchesEyebrow;
+  const title =
+    getLocalizedField(locale, content?.titleEn ?? "", content?.titleMy) ||
+    t.landing.branchesTitle;
+  const description =
+    getLocalizedField(locale, content?.descriptionEn ?? "", content?.descriptionMy) ||
+    t.landing.branchesDescription;
 
   return (
     <section id="branches" className="scroll-reveal bg-black px-4 py-24 sm:px-6">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto mb-12 max-w-3xl text-center">
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.34em] text-[#E53935]">
-            {t.landing.branchesEyebrow}
+            {eyebrow}
           </p>
           <h2 className="text-4xl font-black uppercase tracking-[0.08em] text-white sm:text-5xl">
-            {t.landing.branchesTitle}
+            {title}
           </h2>
           <p className="mt-5 text-base leading-8 text-zinc-400">
-            {t.landing.branchesDescription}
+            {description}
           </p>
         </div>
 

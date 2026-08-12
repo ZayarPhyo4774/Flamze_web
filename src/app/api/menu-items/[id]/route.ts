@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { authorizeRequest } from "@/lib/auth";
+import { parseOptionalSafeHref } from "@/lib/safe-href";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -39,13 +40,22 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const body = await request.json();
     const { name, nameMy, description, descriptionMy, price, image, rating, branchIds, categoryId, isAvailable } = body;
 
+    let validatedImage: string | null | undefined = undefined;
+    if (image !== undefined) {
+      const imageResult = parseOptionalSafeHref(image, "image");
+      if ("error" in imageResult) {
+        return NextResponse.json({ error: imageResult.error }, { status: 400 });
+      }
+      validatedImage = imageResult.value;
+    }
+
     const updateData: Prisma.MenuItemUpdateInput = {
       ...(name !== undefined && { name }),
       ...(nameMy !== undefined && { nameMy: nameMy?.trim() || null }),
       ...(description !== undefined && { description }),
       ...(descriptionMy !== undefined && { descriptionMy: descriptionMy?.trim() || null }),
       ...(price !== undefined && { price: parseFloat(price) }),
-      ...(image !== undefined && { image }),
+      ...(validatedImage !== undefined && { image: validatedImage }),
       ...(rating !== undefined && { rating: Math.min(Math.max(rating, 0), 5) }),
       ...(categoryId !== undefined && { category: { connect: { id: categoryId } } }),
       ...(isAvailable !== undefined && { isAvailable }),

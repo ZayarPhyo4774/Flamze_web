@@ -12,9 +12,16 @@ import { useLocale } from "@/context/LocaleContext";
 import { getLocalizedField } from "@/i18n/translations";
 import type { MenuItemWithCategory } from "@/lib/types";
 
+type MenuCategory = {
+  slug: string;
+  name: string;
+  nameMy: string | null;
+  children?: { slug: string; name: string; nameMy: string | null }[];
+};
+
 type MenuData = {
   branch: { slug: string; name: string; address: string | null };
-  categories: { slug: string; name: string; nameMy: string | null }[];
+  categories: MenuCategory[];
   menuItems: MenuItemWithCategory[];
 };
 
@@ -77,16 +84,32 @@ function MenuWithBranch({ branchSlug }: { branchSlug: string }) {
       data?.categories.map((c) => ({
         slug: c.slug,
         name: getLocalizedField(locale, c.name, c.nameMy),
+        children: c.children?.map((child) => ({
+          slug: child.slug,
+          name: getLocalizedField(locale, child.name, child.nameMy),
+        })),
       })) ?? [],
     [data?.categories, locale]
   );
 
   const filteredItems = useMemo(() => {
     if (!data) return [];
+
+    const childSlugsByParent = new Map<string, Set<string>>();
+    for (const category of data.categories) {
+      childSlugsByParent.set(
+        category.slug,
+        new Set((category.children ?? []).map((child) => child.slug))
+      );
+    }
+
     return data.menuItems
-      .filter(
-        (item) => activeCategory === "all" || item.category.slug === activeCategory
-      )
+      .filter((item) => {
+        if (activeCategory === "all") return true;
+        if (item.category.slug === activeCategory) return true;
+        const childSlugs = childSlugsByParent.get(activeCategory);
+        return childSlugs?.has(item.category.slug) ?? false;
+      })
       .map((item) => ({
         ...item,
         displayName: getLocalizedField(locale, item.name, item.nameMy),

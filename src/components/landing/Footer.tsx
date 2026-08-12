@@ -3,19 +3,29 @@
 import Link from "next/link";
 import { Camera, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { useLocale } from "@/context/LocaleContext";
-
-const links = [
-  { labelKey: "home", href: "/#home" },
-  { labelKey: "menu", href: "/#signature" },
-  { labelKey: "branches", href: "/#branches" },
-  { labelKey: "about", href: "/#about" },
-  { labelKey: "admin", href: "/admin" },
-] as const;
+import { getLocalizedField } from "@/i18n/translations";
+import type { LandingSectionContent, NavLinkContent } from "@/lib/types";
 
 const COPYRIGHT_YEAR = 2026;
 
-export function Footer() {
-  const { t } = useLocale();
+const fallbackLinks = [
+  { id: "f1", labelEn: "Home", labelMy: null, href: "/#home", sortOrder: 1, isVisible: true },
+  { id: "f2", labelEn: "Menu", labelMy: null, href: "/#signature", sortOrder: 2, isVisible: true },
+  { id: "f3", labelEn: "Branches", labelMy: null, href: "/#branches", sortOrder: 3, isVisible: true },
+  { id: "f4", labelEn: "About", labelMy: null, href: "/#about", sortOrder: 4, isVisible: true },
+];
+
+interface FooterProps {
+  content?: LandingSectionContent;
+  navLinks?: NavLinkContent[];
+}
+
+export function Footer({ content, navLinks }: FooterProps) {
+  const { locale, t } = useLocale();
+  const description =
+    getLocalizedField(locale, content?.descriptionEn ?? "", content?.descriptionMy) ||
+    t.landing.footerDescription;
+  const links = navLinks && navLinks.length > 0 ? navLinks : fallbackLinks;
 
   return (
     <footer className="border-t border-white/10 bg-[#0F0F0F] px-4 py-14 sm:px-6">
@@ -28,7 +38,7 @@ export function Footer() {
             HOTPOT & BBQ
           </Link>
           <p className="mt-5 max-w-sm text-sm leading-7 text-zinc-500">
-            {t.landing.footerDescription}
+            {description}
           </p>
           <div className="mt-6 flex gap-3">
             <Link
@@ -50,17 +60,16 @@ export function Footer() {
 
         <div>
           <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.28em] text-[#FFC107]">
-            Links
             {t.landing.footerLinks}
           </h3>
           <div className="grid gap-3">
             {links.map((link) => (
               <Link
-                key={link.href}
+                key={link.id}
                 href={link.href}
                 className="text-sm text-zinc-400 transition-colors hover:text-white"
               >
-                {t.nav[link.labelKey]}
+                {getLocalizedField(locale, link.labelEn, link.labelMy)}
               </Link>
             ))}
           </div>
@@ -68,7 +77,6 @@ export function Footer() {
 
         <div>
           <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.28em] text-[#FFC107]">
-            Contact
             {t.landing.footerContact}
           </h3>
           <div className="space-y-4 text-sm text-zinc-400">

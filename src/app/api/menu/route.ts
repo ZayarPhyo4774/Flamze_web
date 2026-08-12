@@ -25,10 +25,22 @@ export async function GET(request: NextRequest) {
           { branchId: branch.id },
         ],
       },
-      include: { category: true },
+      include: {
+        category: {
+          include: {
+            parent: { select: { id: true, slug: true, name: true, nameMy: true } },
+          },
+        },
+      },
       orderBy: [{ category: { sortOrder: "asc" } }, { name: "asc" }],
     }),
-    prisma.category.findMany({ orderBy: { sortOrder: "asc" } }),
+    prisma.category.findMany({
+      where: { parentId: null },
+      orderBy: { sortOrder: "asc" },
+      include: {
+        children: { orderBy: { sortOrder: "asc" } },
+      },
+    }),
   ]);
 
   return NextResponse.json({

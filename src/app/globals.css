@@ -89,6 +89,60 @@ html:lang(my) body {
   animation: hero-fade 900ms ease-out both;
 }
 
+.hero-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #0f0f0f;
+}
+
+.hero-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate3d(-50%, -50%, 0);
+  object-fit: cover;
+  object-position: center;
+  -webkit-object-fit: cover;
+}
+
+/* Desktop: 16:9 landscape — fill width, crop top/bottom */
+.hero-video--desktop {
+  object-position: center center;
+}
+
+@media (min-width: 640px) {
+  .hero-video--desktop {
+    min-width: 100%;
+    min-height: 100%;
+    transform: translate3d(-50%, -50%, 0) scale(1.02);
+  }
+}
+
+/* Mobile: 9:16 portrait — fill height, crop sides */
+.hero-video--mobile {
+  object-position: center center;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate3d(-50%, -50%, 0) scale(1.08);
+}
+
+@media (max-width: 639px) {
+  .hero-video--mobile {
+    width: 100%;
+    height: 100%;
+    min-width: unset;
+    min-height: unset;
+    object-fit: cover;
+  }
+}
+
 .scroll-reveal {
   animation: scroll-reveal 700ms ease-out both;
 }
