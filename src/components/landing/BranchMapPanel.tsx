@@ -51,10 +51,14 @@ export function BranchMapPanel({ points }: BranchMapPanelProps) {
       );
 
       if (points.length === 1) {
-        map.setView([points[0].lat, points[0].lng], 14);
+        map.setView([points[0].lat, points[0].lng], 16);
       } else {
         map.fitBounds(L.featureGroup(markers).getBounds().pad(0.25));
       }
+
+      requestAnimationFrame(() => {
+        map.invalidateSize();
+      });
     });
 
     return () => {

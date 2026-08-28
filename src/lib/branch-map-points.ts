@@ -1,4 +1,4 @@
-import { extractMapLocation } from "@/lib/map-embed";
+import { extractMapLocation, resolveMapUrl } from "@/lib/map-embed";
 import { geocodeQuery } from "@/lib/geocode";
 
 export type BranchMapPoint = {
@@ -15,9 +15,12 @@ type BranchMapInput = {
   address?: string | null;
 };
 
-function branchMapQuery(branch: BranchMapInput): string | null {
-  const fromMapUrl = extractMapLocation(branch.mapUrl, branch.name);
-  if (fromMapUrl) return fromMapUrl.query;
+async function branchMapQuery(branch: BranchMapInput): Promise<string | null> {
+  if (branch.mapUrl?.trim()) {
+    const resolved = await resolveMapUrl(branch.mapUrl);
+    const fromMapUrl = extractMapLocation(resolved, branch.name);
+    if (fromMapUrl) return fromMapUrl.query;
+  }
 
   const address = branch.address?.trim();
   return address || null;
@@ -29,7 +32,7 @@ export async function resolveBranchMapPoints(
   const points: BranchMapPoint[] = [];
 
   for (const branch of branches) {
-    const query = branchMapQuery(branch);
+    const query = await branchMapQuery(branch);
     if (!query) continue;
 
     const coords = await geocodeQuery(query);

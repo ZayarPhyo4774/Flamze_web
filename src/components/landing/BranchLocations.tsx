@@ -7,6 +7,7 @@ import { useLocale } from "@/context/LocaleContext";
 import { getLocalizedField } from "@/i18n/translations";
 import { BranchMapPanel } from "@/components/landing/BranchMapPanel";
 import type { BranchMapPoint } from "@/lib/branch-map-points";
+import { getBranchMapEmbedUrl } from "@/lib/map-embed";
 import type { BranchSummary, LandingSectionContent } from "@/lib/types";
 
 interface BranchLocationsProps {
@@ -17,6 +18,7 @@ interface BranchLocationsProps {
 
 export function BranchLocations({ branches, mapPoints, content }: BranchLocationsProps) {
   const { locale, t } = useLocale();
+  const embedUrl = branches.map(getBranchMapEmbedUrl).find(Boolean) ?? null;
   const eyebrow =
     getLocalizedField(locale, content?.eyebrowEn ?? "", content?.eyebrowMy) ||
     t.landing.locationsEyebrow;
@@ -52,6 +54,15 @@ export function BranchLocations({ branches, mapPoints, content }: BranchLocation
             <div className="relative min-h-[360px]">
               {mapPoints.length > 0 ? (
                 <BranchMapPanel points={mapPoints} />
+              ) : embedUrl ? (
+                <iframe
+                  title="Branch locations map"
+                  src={embedUrl}
+                  className="absolute inset-0 h-full w-full border-0"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
               ) : (
                 <>
                   <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.07)_1px,transparent_1px)] bg-[size:42px_42px]" />
